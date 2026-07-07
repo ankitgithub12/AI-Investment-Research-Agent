@@ -1,17 +1,15 @@
 import { useMutation } from '@tanstack/react-query';
-import { researchCompany } from '@/services/api';
+import api from '../services/api.js';
 
 /**
- * React Query mutation hook for conducting company research.
- *
- * Usage:
- *   const { mutate, data, isPending, isError, error } = useResearch();
- *   mutate('Apple');
+ * Custom React Query hook for submitting investment research requests.
+ * Uses a mutation to fetch the structured analysis report.
  */
 export function useResearch() {
   return useMutation({
-    mutationKey: ['research'],
-    mutationFn: (company) => researchCompany(company),
-    retry: false, // Don't retry on failure — LLM calls are expensive
+    mutationFn: async (companyName) => {
+      const response = await api.post('/api/research', { company: companyName });
+      return response.data;
+    },
   });
 }

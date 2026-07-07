@@ -1,17 +1,17 @@
 # AI Investment Research Agent
 
-An AI-powered investment research agent that analyzes public companies using LangChain.js, OpenAI GPT-4.1, and real-time financial data. Enter any company name and get a comprehensive investment recommendation with financial analysis, news sentiment, risk assessment, and detailed reasoning.
+An AI-powered investment research agent that analyzes public companies using LangChain.js, Google Gemini, and real-time financial data. Enter any company name and get a comprehensive investment recommendation with financial analysis, news sentiment, risk assessment, and detailed reasoning.
 
 ![Tech Stack](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat&logo=langchain&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat&logo=openai&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini-4285F4?style=flat&logo=google-gemini&logoColor=white)
 
 ---
 
 ## Features
 
-- 🤖 **AI-Powered Analysis** — Uses LangChain.js with GPT-4.1 for intelligent company research
+- 🤖 **AI-Powered Analysis** — Uses LangChain.js with Gemini (gemini-2.0-flash / gemini-1.5-pro) for intelligent company research
 - 📊 **Financial Analysis** — Real-time data from Yahoo Finance (revenue, margins, valuation)
 - 📰 **News Sentiment** — Aggregates and analyzes recent news via Tavily Search
 - ⚠️ **Risk Assessment** — SWOT analysis and comprehensive risk evaluation
@@ -40,7 +40,7 @@ An AI-powered investment research agent that analyzes public companies using Lan
 | Node.js | Runtime |
 | Express.js | REST API |
 | LangChain.js | AI orchestration |
-| OpenAI GPT-4.1 | Language model |
+| Google Gemini | Language model (via @langchain/google-genai) |
 | Tavily Search | Web search |
 | yahoo-finance2 | Financial data |
 | Zod | Schema validation |
@@ -52,7 +52,7 @@ An AI-powered investment research agent that analyzes public companies using Lan
 ### Prerequisites
 - Node.js 18+
 - npm 9+
-- OpenAI API Key
+- Google Gemini API Key
 - Tavily API Key
 
 ### 1. Clone the Repository
@@ -86,18 +86,18 @@ Edit `.env` with your API keys:
 ```env
 PORT=5000
 NODE_ENV=development
-OPENAI_API_KEY=sk-your-openai-key-here
-OPENAI_MODEL=gpt-4.1
+GOOGLE_API_KEY=your-gemini-key-here
+GEMINI_MODEL=gemini-2.0-flash
 TAVILY_API_KEY=tvly-your-tavily-key-here
 NEWS_API_KEY=your-newsapi-key-here  # Optional
 ```
 
 | Variable | Required | Description |
 |---|---|---|
-| `OPENAI_API_KEY` | ✅ | OpenAI API key for GPT-4.1 |
+| `GOOGLE_API_KEY` | ✅ | Google AI Studio Gemini API key |
 | `TAVILY_API_KEY` | ✅ | Tavily Search API key for web search |
 | `NEWS_API_KEY` | ❌ | NewsAPI key (optional fallback for news) |
-| `OPENAI_MODEL` | ❌ | LLM model name (defaults to `gpt-4.1`) |
+| `GEMINI_MODEL` | ❌ | Gemini model name (defaults to `gemini-2.0-flash`) |
 | `PORT` | ❌ | Server port (defaults to `5000`) |
 
 ---
@@ -130,41 +130,41 @@ Open your browser to `http://localhost:5173` and start researching companies.
 │   React UI   │                          │   Express API    │
 │   (Vite)     │ ◄─────────────────────── │                  │
 │              │    Structured JSON        │                  │
-└──────────────┘                          └────────┬─────────┘
-                                                   │
-                                          ┌────────▼─────────┐
-                                          │  Research Service │
-                                          │  (Orchestrator)   │
-                                          └────────┬─────────┘
-                                                   │
-                         ┌─────────────────────────┼─────────────────────────┐
-                         │                         │                         │
-                ┌────────▼────────┐     ┌──────────▼──────────┐    ┌────────▼────────┐
-                │  Company Search │     │   Financial Data     │    │   News Search   │
-                │  (Tavily API)   │     │   (Yahoo Finance)    │    │  (Tavily/News)  │
-                └────────┬────────┘     └──────────┬──────────┘    └────────┬────────┘
-                         │                         │                         │
-                         └─────────────────────────┼─────────────────────────┘
-                                                   │
-                                          ┌────────▼─────────┐
-                                          │  LangChain Chains │
-                                          │                   │
-                                          │  • researchChain  │
-                                          │  • financialChain │
-                                          │  • newsChain      │
-                                          │  • analysisChain  │
-                                          │  • recommendation │
-                                          └────────┬─────────┘
-                                                   │
-                                          ┌────────▼─────────┐
-                                          │  ChatOpenAI       │
-                                          │  (GPT-4.1)        │
-                                          └────────┬─────────┘
-                                                   │
-                                          ┌────────▼─────────┐
-                                          │  Structured JSON  │
-                                          │  Response         │
-                                          └──────────────────┘
+└──────────────┘                          └─────────┬────────┘
+                                                    │
+                                           ┌────────▼─────────┐
+                                           │  Research Service │
+                                           │  (Orchestrator)   │
+                                           └────────┬─────────┘
+                                                    │
+                         ┌──────────────────────────┼─────────────────────────┐
+                         │                          │                         │
+                ┌────────▼────────┐      ┌──────────▼──────────┐    ┌────────▼────────┐
+                │  Company Search │      │   Financial Data     │    │   News Search   │
+                │  (Tavily API)   │      │   (Yahoo Finance)    │    │  (Tavily/News)  │
+                └────────┬────────┘      └──────────┬──────────┘    └────────┬────────┘
+                         │                          │                         │
+                         └──────────────────────────┼─────────────────────────┘
+                                                    │
+                                           ┌────────▼─────────┐
+                                           │  LangChain Chains │
+                                           │                   │
+                                           │  • researchChain  │
+                                           │  • financialChain │
+                                           │  • newsChain      │
+                                           │  • analysisChain  │
+                                           │  • recommendation │
+                                           └────────┬─────────┘
+                                                    │
+                                           ┌────────▼─────────┐
+                                           │  ChatGoogle-      │
+                                           │  GenerativeAI     │
+                                           └────────┬─────────┘
+                                                    │
+                                           ┌────────▼─────────┐
+                                           │  Structured JSON  │
+                                           │  Response         │
+                                           └──────────────────┘
 ```
 
 ---
@@ -187,7 +187,7 @@ The research pipeline follows a sequential chain architecture:
 - Collects up to 8 recent articles
 
 ### 4. AI Analysis (LangChain.js)
-Each step uses a `RunnableSequence` piping a `PromptTemplate` into `ChatOpenAI`:
+Each step uses a `RunnableSequence` piping a `PromptTemplate` into the shared `ChatGoogleGenerativeAI` instance:
 
 | Chain | Input | Output |
 |---|---|---|
@@ -220,7 +220,7 @@ The final chain produces a structured JSON response with:
 | **Yahoo Finance** | Best free source for real-time financial data in Node.js |
 
 ### Current Limitations
-- Relies on external APIs (OpenAI, Tavily, Yahoo Finance) which may rate limit
+- Relies on external APIs (Gemini, Tavily, Yahoo Finance) which may rate limit
 - Research takes 30-60 seconds due to sequential LLM calls
 - No caching — repeated research for the same company makes fresh API calls
 - Financial data quality depends on Yahoo Finance coverage

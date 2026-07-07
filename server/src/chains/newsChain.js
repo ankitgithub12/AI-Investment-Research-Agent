@@ -1,7 +1,6 @@
 import { RunnableSequence } from '@langchain/core/runnables';
-import { ChatOpenAI } from '@langchain/openai';
+import { llm } from '../config/llm.js';
 import { newsPrompt } from '../prompts/newsPrompt.js';
-import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -9,17 +8,10 @@ import logger from '../utils/logger.js';
  *
  * Takes raw news data and produces a sentiment analysis with key highlights.
  *
- * Pipeline: newsPrompt → ChatOpenAI → string output
+ * Pipeline: newsPrompt → ChatGoogleGenerativeAI → string output
  */
 export function createNewsChain() {
-  const model = new ChatOpenAI({
-    modelName: config.openai.model,
-    openAIApiKey: config.openai.apiKey,
-    temperature: 0.3,
-    maxTokens: 1500,
-  });
-
-  const chain = RunnableSequence.from([newsPrompt, model]);
+  const chain = RunnableSequence.from([newsPrompt, llm]);
 
   return {
     /**

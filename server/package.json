@@ -9,14 +9,14 @@
   },
   "dependencies": {
     "@langchain/core": "^0.3.0",
-    "@langchain/openai": "^0.4.0",
+    "@langchain/google-genai": "^0.2.18",
     "@langchain/tavily": "^0.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.21.0",
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
-    "yahoo-finance2": "^2.13.0",
+    "yahoo-finance2": "2.13.3",
     "zod": "^3.23.0"
   }
 }

@@ -14,7 +14,7 @@ async function start() {
     app.listen(config.port, () => {
       logger.success(`Server running on http://localhost:${config.port}`);
       logger.info(`Environment: ${config.nodeEnv}`);
-      logger.info(`LLM Model: ${config.openai.model}`);
+      logger.info(`LLM Model: ${config.google.model}`);
       logger.info('API Endpoints:');
       logger.info('  POST /api/research  — Run investment research');
       logger.info('  GET  /api/health    — Health check');

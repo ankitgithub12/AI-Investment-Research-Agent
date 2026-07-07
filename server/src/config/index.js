@@ -4,9 +4,9 @@ dotenv.config();
 const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY,
-    model: process.env.OPENAI_MODEL || 'gpt-4.1',
+  google: {
+    apiKey: process.env.GOOGLE_API_KEY,
+    model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
   },
   tavily: {
     apiKey: process.env.TAVILY_API_KEY,
@@ -22,7 +22,7 @@ const config = {
  */
 export function validateConfig() {
   const required = [
-    ['OPENAI_API_KEY', config.openai.apiKey],
+    ['GOOGLE_API_KEY', config.google.apiKey],
     ['TAVILY_API_KEY', config.tavily.apiKey],
   ];
 

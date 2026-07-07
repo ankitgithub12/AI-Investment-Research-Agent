@@ -1,41 +1,24 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 
-const ResearchContext = createContext(null);
+const ResearchContext = createContext();
 
 /**
- * Provides research state management across pages.
- * Stores the current research results so they persist during navigation.
+ * Context Provider to store and share the research report data between routes.
  */
 export function ResearchProvider({ children }) {
-  const [results, setResults] = useState(null);
-  const [companyName, setCompanyName] = useState('');
-
-  const saveResults = useCallback((company, data) => {
-    setCompanyName(company);
-    setResults(data);
-  }, []);
-
-  const clearResults = useCallback(() => {
-    setCompanyName('');
-    setResults(null);
-  }, []);
+  const [researchData, setResearchData] = useState(null);
 
   return (
-    <ResearchContext.Provider
-      value={{ results, companyName, saveResults, clearResults }}
-    >
+    <ResearchContext.Provider value={{ researchData, setResearchData }}>
       {children}
     </ResearchContext.Provider>
   );
 }
 
-/**
- * Hook to access research context.
- */
-export function useResearchContext() {
+export function useResearchData() {
   const context = useContext(ResearchContext);
   if (!context) {
-    throw new Error('useResearchContext must be used within a ResearchProvider');
+    throw new Error('useResearchData must be used within a ResearchProvider');
   }
   return context;
 }

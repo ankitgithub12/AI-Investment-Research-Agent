@@ -1,7 +1,6 @@
 import { RunnableSequence } from '@langchain/core/runnables';
-import { ChatOpenAI } from '@langchain/openai';
+import { llm } from '../config/llm.js';
 import { businessPrompt } from '../prompts/businessPrompt.js';
-import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -10,17 +9,10 @@ import logger from '../utils/logger.js';
  * Takes raw search data and financial profile,
  * then produces a structured business overview using the LLM.
  *
- * Pipeline: businessPrompt → ChatOpenAI → string output
+ * Pipeline: businessPrompt → ChatGoogleGenerativeAI → string output
  */
 export function createResearchChain() {
-  const model = new ChatOpenAI({
-    modelName: config.openai.model,
-    openAIApiKey: config.openai.apiKey,
-    temperature: 0.3,
-    maxTokens: 1500,
-  });
-
-  const chain = RunnableSequence.from([businessPrompt, model]);
+  const chain = RunnableSequence.from([businessPrompt, llm]);
 
   return {
     /**

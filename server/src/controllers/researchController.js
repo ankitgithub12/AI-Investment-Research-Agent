@@ -1,6 +1,17 @@
+import { z } from 'zod';
 import { conductResearch } from '../services/researchService.js';
 import { ValidationError } from '../utils/errors.js';
 import logger from '../utils/logger.js';
+
+const researchSchema = z.object({
+  company: z.string({
+    required_error: 'Company name is required.',
+    invalid_type_error: 'Company name must be a string.',
+  })
+  .trim()
+  .min(2, 'Company name must be at least 2 characters long.')
+  .max(100, 'Company name must be less than 100 characters.'),
+});
 
 /**
  * Handles POST /api/research requests.
@@ -8,22 +19,13 @@ import logger from '../utils/logger.js';
  */
 export async function researchCompany(req, res, next) {
   try {
-    const { company } = req.body;
-
-    // ── Validation ──────────────────────────────────────────────────
-    if (!company || typeof company !== 'string') {
-      throw new ValidationError('Company name is required. Please provide a valid company name.');
+    const validationResult = researchSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      const firstError = validationResult.error.errors[0]?.message || 'Invalid company name.';
+      throw new ValidationError(firstError);
     }
 
-    const companyName = company.trim();
-    if (companyName.length < 2) {
-      throw new ValidationError('Company name must be at least 2 characters long.');
-    }
-
-    if (companyName.length > 100) {
-      throw new ValidationError('Company name must be less than 100 characters.');
-    }
-
+    const companyName = validationResult.data.company;
     logger.info(`Research request received for: ${companyName}`);
 
     // ── Run Research Pipeline ───────────────────────────────────────

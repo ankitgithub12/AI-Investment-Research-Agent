@@ -1,7 +1,6 @@
 import { RunnableSequence } from '@langchain/core/runnables';
-import { ChatOpenAI } from '@langchain/openai';
+import { llm } from '../config/llm.js';
 import { financePrompt } from '../prompts/financePrompt.js';
-import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -9,17 +8,10 @@ import logger from '../utils/logger.js';
  *
  * Takes raw financial data and produces a detailed financial health analysis.
  *
- * Pipeline: financePrompt → ChatOpenAI → string output
+ * Pipeline: financePrompt → ChatGoogleGenerativeAI → string output
  */
 export function createFinancialChain() {
-  const model = new ChatOpenAI({
-    modelName: config.openai.model,
-    openAIApiKey: config.openai.apiKey,
-    temperature: 0.2,
-    maxTokens: 1500,
-  });
-
-  const chain = RunnableSequence.from([financePrompt, model]);
+  const chain = RunnableSequence.from([financePrompt, llm]);
 
   return {
     /**

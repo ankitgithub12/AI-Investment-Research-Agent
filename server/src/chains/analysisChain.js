@@ -1,7 +1,6 @@
 import { RunnableSequence } from '@langchain/core/runnables';
-import { ChatOpenAI } from '@langchain/openai';
+import { llm } from '../config/llm.js';
 import { riskPrompt } from '../prompts/riskPrompt.js';
-import config from '../config/index.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -10,17 +9,10 @@ import logger from '../utils/logger.js';
  * Takes the outputs of previous chains (business overview, financial analysis,
  * news analysis) and produces a comprehensive risk and opportunity assessment.
  *
- * Pipeline: riskPrompt → ChatOpenAI → string output
+ * Pipeline: riskPrompt → ChatGoogleGenerativeAI → string output
  */
 export function createAnalysisChain() {
-  const model = new ChatOpenAI({
-    modelName: config.openai.model,
-    openAIApiKey: config.openai.apiKey,
-    temperature: 0.3,
-    maxTokens: 2000,
-  });
-
-  const chain = RunnableSequence.from([riskPrompt, model]);
+  const chain = RunnableSequence.from([riskPrompt, llm]);
 
   return {
     /**

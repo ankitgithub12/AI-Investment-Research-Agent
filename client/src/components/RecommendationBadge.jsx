@@ -1,33 +1,30 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import React from 'react';
+import { CheckCircle2, AlertTriangle } from 'lucide-react';
 
 /**
- * Displays the INVEST ✅ or PASS ❌ recommendation badge.
+ * Displays an Invest/Pass recommendation badge with confidence scores.
  */
-export default function RecommendationBadge({ recommendation }) {
+export default function RecommendationBadge({ recommendation, confidence }) {
   const isInvest = recommendation?.toLowerCase() === 'invest';
 
   return (
-    <div
-      className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm tracking-wide transition-all duration-300 animate-scale-in ${
-        isInvest
-          ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm shadow-emerald-100'
-          : 'bg-red-100 text-red-700 border border-red-200 shadow-sm shadow-red-100'
-      }`}
-      id="recommendation-badge"
-    >
+    <div className={`flex items-center gap-3 px-4 py-2 rounded-full border ${
+      isInvest 
+        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+        : 'bg-red-500/10 border-red-500/30 text-red-400'
+    } animate-fade-in`}>
       {isInvest ? (
-        <>
-          <TrendingUp size={18} strokeWidth={2.5} />
-          <span>INVEST</span>
-          <span>✅</span>
-        </>
+        <CheckCircle2 className="h-5 w-5 animate-pulse text-emerald-400" />
       ) : (
-        <>
-          <TrendingDown size={18} strokeWidth={2.5} />
-          <span>PASS</span>
-          <span>❌</span>
-        </>
+        <AlertTriangle className="h-5 w-5 text-red-400" />
       )}
+      <span className="font-display font-bold tracking-wide text-sm uppercase">
+        {isInvest ? 'INVEST' : 'PASS'}
+      </span>
+      <span className="h-4 w-[1px] bg-zinc-800"></span>
+      <span className="text-sm font-medium text-dark-text-secondary">
+        {confidence}% Confidence
+      </span>
     </div>
   );
 }

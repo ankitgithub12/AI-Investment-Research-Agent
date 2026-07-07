@@ -1,7 +1,7 @@
 import { RunnableSequence, RunnableLambda } from '@langchain/core/runnables';
-import { ChatOpenAI } from '@langchain/openai';
+import { llm } from '../config/llm.js';
 import { recommendationPrompt } from '../prompts/recommendationPrompt.js';
-import config from '../config/index.js';
+import { parseJSON } from '../utils/jsonParser.js';
 import logger from '../utils/logger.js';
 
 /**
@@ -11,44 +11,18 @@ import logger from '../utils/logger.js';
  * and generates a structured investment recommendation with scores,
  * chart data, and detailed reasoning.
  *
- * Pipeline: recommendationPrompt → ChatOpenAI → JSON parser → structured result
+ * Pipeline: recommendationPrompt → ChatGoogleGenerativeAI → JSON parser → structured result
  */
 export function createRecommendationChain() {
-  const model = new ChatOpenAI({
-    modelName: config.openai.model,
-    openAIApiKey: config.openai.apiKey,
-    temperature: 0.4,
-    maxTokens: 4000,
-  });
-
   /**
    * Custom parser that extracts JSON from the LLM response.
-   * Handles cases where the LLM wraps JSON in markdown code blocks.
+   * Uses the jsonParser utility to handle markdown code blocks.
    */
   const jsonParser = new RunnableLambda({
-    func: (input) => {
-      const content = typeof input === 'string' ? input : input.content;
-      try {
-        // Try direct parse first
-        return JSON.parse(content);
-      } catch {
-        // Try extracting from markdown code block
-        const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
-        if (jsonMatch) {
-          return JSON.parse(jsonMatch[1].trim());
-        }
-        // Try finding the first { to last }
-        const start = content.indexOf('{');
-        const end = content.lastIndexOf('}');
-        if (start !== -1 && end !== -1) {
-          return JSON.parse(content.slice(start, end + 1));
-        }
-        throw new Error('Could not parse LLM response as JSON');
-      }
-    },
+    func: (input) => parseJSON(input),
   });
 
-  const chain = RunnableSequence.from([recommendationPrompt, model, jsonParser]);
+  const chain = RunnableSequence.from([recommendationPrompt, llm, jsonParser]);
 
   return {
     /**
