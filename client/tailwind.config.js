@@ -7,20 +7,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        dark: {
-          bg: '#0A0A0B',      // Stripe/Linear-like dark background
-          card: '#121214',    // Elevated card background
-          border: '#232326',  // Subtle borders
-          input: '#1A1A1E',   // Input field background
+        light: {
+          bg: '#FAFAFB',      // Crisp premium off-white background
+          card: '#FFFFFF',    // Crisp pure white card
+          border: '#EBECEF',  // Fine light gray borders
+          input: '#F4F5F6',   // Soft gray input background
           text: {
-            primary: '#F4F4F5',  // Off-white primary text
-            secondary: '#A1A1AA',// Zinc-400 secondary text
-            muted: '#71717A',    // Zinc-500 muted text
+            primary: '#0F1115',  // Deep charcoal primary text
+            secondary: '#5C6470',// Charcoal gray secondary text
+            muted: '#8A92A0',    // Cool gray muted text
           }
         },
         brand: {
           DEFAULT: '#4F46E5',  // Indigo accent
-          dark: '#4338CA',
+          dark: '#3F37C9',
           light: '#818CF8',
         },
       },

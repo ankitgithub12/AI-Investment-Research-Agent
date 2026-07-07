@@ -4,8 +4,8 @@
 
 @layer base {
   body {
-    background-color: #0A0A0B;
-    color: #F4F4F5;
+    background-color: #FAFAFB;
+    color: #0F1115;
   }
 }
 
@@ -15,21 +15,21 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0A0B;
+  background: #FAFAFB;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232326;
+  background: #EBECEF;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D2D30;
+  background: #D5D7DD;
 }
 
 /* Custom visual styles */
 .glass-card {
-  background: rgba(18, 18, 20, 0.75);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(35, 35, 38, 0.8);
+  border: 1px solid rgba(235, 236, 239, 0.8);
 }
 
 .card-hover {
