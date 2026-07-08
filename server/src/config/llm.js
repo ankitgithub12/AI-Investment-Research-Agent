@@ -29,6 +29,7 @@ const getOpenRouterModel = () => {
     },
     temperature: 0.3,
     maxRetries: 1,
+    maxTokens: 4000,
   });
 };
 
