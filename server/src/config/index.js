@@ -8,11 +8,22 @@ const config = {
     apiKey: process.env.GOOGLE_API_KEY,
     model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
   },
+  openRouter: {
+    apiKey: process.env.OPENROUTER_API_KEY,
+    model: process.env.OPENROUTER_MODEL || 'google/gemini-2.0-flash',
+  },
   tavily: {
     apiKey: process.env.TAVILY_API_KEY,
   },
   newsApi: {
     apiKey: process.env.NEWS_API_KEY,
+  },
+  financial: {
+    provider: process.env.FINANCIAL_PROVIDER || 'fmp',
+    fmpApiKey: process.env.FMP_API_KEY,
+    cacheDuration: parseInt(process.env.CACHE_DURATION, 10) || 600,
+    maxRetries: parseInt(process.env.MAX_RETRIES, 10) || 4,
+    requestTimeout: parseInt(process.env.REQUEST_TIMEOUT, 10) || 10000,
   },
 };
 
@@ -21,28 +32,27 @@ const config = {
  * Throws an error if any required keys are missing.
  */
 export function validateConfig() {
-  const required = [
-    ['GOOGLE_API_KEY', config.google.apiKey],
-    ['TAVILY_API_KEY', config.tavily.apiKey],
-  ];
-
-  if (config.google.apiKey === 'your-gemini-api-key-here') {
-    throw new Error(
-      'GOOGLE_API_KEY is set to the default placeholder. ' +
-      'Please replace it with your actual Gemini API key from Google AI Studio in server/.env.'
-    );
+  // Validate Tavily
+  if (!config.tavily.apiKey) {
+    throw new Error('Missing required environment variable: TAVILY_API_KEY. Please check your .env file.');
   }
 
-  const missing = required
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+  // Validate Financial Provider
+  if (config.financial.provider === 'fmp' && !config.financial.fmpApiKey) {
+    throw new Error('Missing required environment variable: FMP_API_KEY. Please check your .env file.');
+  }
 
-  if (missing.length > 0) {
+  // Validate LLM Keys (At least one is required: Google Gemini or OpenRouter)
+  const hasGoogleKey = config.google.apiKey && config.google.apiKey !== 'your-gemini-api-key-here';
+  const hasOpenRouterKey = !!config.openRouter.apiKey;
+
+  if (!hasGoogleKey && !hasOpenRouterKey) {
     throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}. ` +
-      'Please check your .env file.'
+      'Missing required LLM configuration. Please provide either GOOGLE_API_KEY or OPENROUTER_API_KEY in server/.env.'
     );
   }
 }
+
+
 
 export default config;

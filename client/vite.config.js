@@ -9,6 +9,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
+        timeout: 120000,       // 120s — long enough for the full LLM pipeline
+        proxyTimeout: 120000,  // 120s — prevents ECONNRESET during research
       },
     },
   },

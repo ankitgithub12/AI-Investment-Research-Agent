@@ -4,67 +4,136 @@
 
 @layer base {
   body {
-    background-color: #FAFAFB;
-    color: #0F1115;
+    background-color: #F8FAFC;
+    color: #0F172A;
+  }
+
+  /* Remove default focus outlines, add custom */
+  *:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.5);
+    outline-offset: 2px;
   }
 }
 
-/* Custom scrollbars */
+/* ── Custom Scrollbar (light theme) ──────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAFAFB;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #EBECEF;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D5D7DD;
+  background: #94A3B8;
 }
 
-/* Custom visual styles */
+/* ── Glassmorphism Card (light theme) ──────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(235, 236, 239, 0.8);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
 }
 
+/* ── Premium Card Hover Effect ──────────────────────────────────────── */
 .card-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(79, 70, 229, 0.4);
-  box-shadow: 0 10px 30px -15px rgba(79, 70, 229, 0.15);
+  transform: translateY(-3px);
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow:
+    0 8px 30px -10px rgba(99, 102, 241, 0.12),
+    0 4px 16px -4px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(99, 102, 241, 0.06);
 }
 
-/* Micro-animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ── Gradient Border Card ───────────────────────────────────────────── */
+.gradient-border {
+  position: relative;
+  border: none;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.08));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* ── Shimmer Loading Effect ─────────────────────────────────────────── */
+.shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    rgba(99, 102, 241, 0) 0%,
+    rgba(99, 102, 241, 0.06) 50%,
+    rgba(99, 102, 241, 0) 100%
+  );
+  background-size: 200% 100%;
 }
 
-.animation-delay-100 {
-  animation-delay: 100ms;
+/* ── Gradient Text Utility ──────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #6366F1 0%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.animation-delay-200 {
-  animation-delay: 200ms;
+.text-gradient-warm {
+  background: linear-gradient(135deg, #F59E0B 0%, #F43F5E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.animation-delay-300 {
-  animation-delay: 300ms;
+/* ── Glow Effects (subtler for light theme) ────────────────────────── */
+.glow-brand {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 40px rgba(99, 102, 241, 0.06);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15), 0 0 30px rgba(16, 185, 129, 0.06);
+}
+
+.glow-rose {
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.15), 0 0 30px rgba(244, 63, 94, 0.06);
+}
+
+/* ── Background mesh gradient (for hero sections — light) ───────────── */
+.bg-mesh {
+  background:
+    radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+}
+
+/* ── Stagger animation delays ───────────────────────────────────────── */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+
+/* ── Smooth transitions for interactive elements ────────────────────── */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Pill badge utility ─────────────────────────────────────────────── */
+.pill {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
 }

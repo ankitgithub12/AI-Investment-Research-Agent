@@ -12,9 +12,9 @@ import logger from '../utils/logger.js';
  * Orchestrates the complete AI investment research pipeline.
  *
  * Pipeline Steps:
- * 1. Search company information (Tavily)
- * 2. Resolve ticker & fetch financial data (Yahoo Finance)
- * 3. Search recent news (Tavily/NewsAPI)
+ * 1. Resolve ticker symbol (Yahoo Finance or local lookup)
+ * 2. Wait briefly to avoid Yahoo rate-limiting
+ * 3. Fetch financial data (Yahoo) + company info (Tavily) + news (Tavily) in parallel
  * 4. Analyze business fundamentals (LLM)
  * 5. Analyze financial health (LLM)
  * 6. Analyze news sentiment (LLM)
@@ -31,25 +31,31 @@ export async function conductResearch(companyName, onProgress) {
   logger.info(`Starting research pipeline for: ${companyName}`);
   const startTime = Date.now();
 
-  // ── Step 1: Gather raw data in parallel ────────────────────────────
-  progress({ step: 1, message: 'Searching company information...' });
+  // ── Step 1: Resolve ticker FIRST (may use local lookup, no API call) ─
+  progress({ step: 1, message: 'Resolving company ticker symbol...' });
 
-  // Resolve ticker symbol first (needed for financial data)
   const tickerSymbol = await resolveTickerSymbol(companyName);
   logger.info(`Ticker resolved: ${tickerSymbol}`);
 
-  // Fetch all raw data in parallel for speed
+  // Brief pause to avoid Yahoo rate-limiting before next Yahoo call
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  // ── Step 2: Gather raw data in parallel ─────────────────────────
+  // Financial data (Yahoo) runs alongside company search + news (Tavily)
+  // Since Tavily and Yahoo are different APIs, they won't rate-limit each other
+  progress({ step: 2, message: 'Gathering company data & financials...' });
+
   const [searchData, financialData, newsData] = await Promise.all([
     searchCompany(companyName).then((data) => {
-      progress({ step: 2, message: 'Company information gathered' });
+      progress({ step: 3, message: 'Company information gathered' });
       return data;
     }),
     fetchFinancialData(tickerSymbol).then((data) => {
-      progress({ step: 3, message: 'Financial data collected' });
+      progress({ step: 4, message: 'Financial data collected' });
       return data;
     }),
     searchNews(companyName).then((data) => {
-      progress({ step: 4, message: 'Recent news collected' });
+      progress({ step: 5, message: 'Recent news collected' });
       return data;
     }),
   ]);
@@ -57,36 +63,60 @@ export async function conductResearch(companyName, onProgress) {
   const financialDataStr = JSON.stringify(financialData, null, 2);
   const newsDataStr = typeof newsData === 'string' ? newsData : JSON.stringify(newsData);
 
-  // ── Step 2: Run AI analysis chains ─────────────────────────────────
+  // ── Step 3: Run AI analysis chains ──────────────────────────────
   // These chains run sequentially because each builds on the previous output
 
-  // 2a. Business overview analysis
-  progress({ step: 5, message: 'Analyzing business fundamentals...' });
-  const researchChain = createResearchChain();
-  const businessOverview = await researchChain.invoke(companyName, searchData, financialDataStr);
+  // 3a. Business overview analysis
+  progress({ step: 6, message: 'Analyzing business fundamentals...' });
+  let businessOverview;
+  try {
+    const researchChain = createResearchChain();
+    businessOverview = await researchChain.invoke(companyName, searchData, financialDataStr);
+  } catch (error) {
+    logger.error(`Business overview chain failed: ${error.message}`);
+    businessOverview = `Business overview analysis could not be completed for ${companyName}. Available data: ${searchData?.substring(0, 500) || 'None'}`;
+  }
 
-  // 2b. Financial health analysis
-  progress({ step: 6, message: 'Analyzing financial health...' });
-  const financialChain = createFinancialChain();
-  const financialAnalysis = await financialChain.invoke(companyName, financialDataStr);
+  // 3b. Financial health analysis
+  progress({ step: 7, message: 'Analyzing financial health...' });
+  let financialAnalysis;
+  try {
+    const financialChain = createFinancialChain();
+    financialAnalysis = await financialChain.invoke(companyName, financialDataStr);
+  } catch (error) {
+    logger.error(`Financial chain failed: ${error.message}`);
+    financialAnalysis = `Financial analysis could not be completed for ${companyName}. Raw data: ${financialDataStr?.substring(0, 500) || 'None'}`;
+  }
 
-  // 2c. News sentiment analysis
-  progress({ step: 7, message: 'Analyzing news sentiment...' });
-  const newsChain = createNewsChain();
-  const newsAnalysis = await newsChain.invoke(companyName, newsDataStr);
+  // 3c. News sentiment analysis
+  progress({ step: 8, message: 'Analyzing news sentiment...' });
+  let newsAnalysis;
+  try {
+    const newsChain = createNewsChain();
+    newsAnalysis = await newsChain.invoke(companyName, newsDataStr);
+  } catch (error) {
+    logger.error(`News chain failed: ${error.message}`);
+    newsAnalysis = `News analysis could not be completed for ${companyName}. Raw news data: ${newsDataStr?.substring(0, 500) || 'None'}`;
+  }
 
-  // 2d. Risk and opportunity assessment
-  progress({ step: 8, message: 'Evaluating investment risks...' });
-  const analysisChain = createAnalysisChain();
-  const riskAnalysis = await analysisChain.invoke(
-    companyName,
-    businessOverview,
-    financialAnalysis,
-    newsAnalysis
-  );
+  // 3d. Risk and opportunity assessment
+  progress({ step: 9, message: 'Evaluating investment risks...' });
+  let riskAnalysis;
+  try {
+    const analysisChain = createAnalysisChain();
+    riskAnalysis = await analysisChain.invoke(
+      companyName,
+      businessOverview,
+      financialAnalysis,
+      newsAnalysis
+    );
+  } catch (error) {
+    logger.error(`Risk analysis chain failed: ${error.message}`);
+    riskAnalysis = `Risk analysis could not be completed for ${companyName}. Will base recommendation on available analyses.`;
+  }
 
-  // ── Step 3: Generate final recommendation ──────────────────────────
-  progress({ step: 9, message: 'Generating investment recommendation...' });
+  // ── Step 4: Generate final recommendation ───────────────────────
+  progress({ step: 10, message: 'Generating investment recommendation...' });
   const recommendationChain = createRecommendationChain();
   const recommendation = await recommendationChain.invoke({
     companyName,
@@ -100,13 +130,13 @@ export async function conductResearch(companyName, onProgress) {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   logger.success(`Research pipeline completed for ${companyName} in ${elapsed}s`);
 
-  progress({ step: 10, message: 'Research complete!' });
+  progress({ step: 11, message: 'Research complete!' });
 
   // Ensure the recommendation has the company name
   return {
     ...recommendation,
     company: recommendation.company || companyName,
-    ticker: tickerSymbol,
+    ticker: recommendation.ticker || tickerSymbol,
     researchedAt: new Date().toISOString(),
     processingTime: `${elapsed}s`,
   };
