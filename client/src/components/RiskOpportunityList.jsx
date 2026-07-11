@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, AlertTriangle } from 'lucide-react';
+import { TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 /**
  * Lists the major investment risks and opportunities side-by-side.
@@ -9,23 +9,22 @@ export default function RiskOpportunityList({ risks, opportunities }) {
   const safeOpportunities = Array.isArray(opportunities) ? opportunities : [];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
       {/* Opportunities (Bullish triggers) */}
-      <div className="glass-card gradient-border rounded-xl p-6 card-hover">
-        <div className="flex items-center gap-2.5 mb-4 border-b border-dark-border/60 pb-3">
-          <div className="p-1.5 bg-accent-emerald/10 rounded-lg">
-            <TrendingUp className="h-4 w-4 text-accent-emerald" />
+      <div className="glass-card rounded-2xl p-6 card-hover shadow-lg shadow-indigo-100/10 border border-slate-200/50 relative overflow-hidden bg-emerald-50/10">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/5 to-transparent rounded-bl-full pointer-events-none" />
+        <div className="flex items-center gap-2.5 mb-5 border-b border-slate-100 pb-3 relative z-10">
+          <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+            <TrendingUp className="h-4.5 w-4.5" />
           </div>
           <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">
             Growth Opportunities
           </h3>
         </div>
-        <ul className="space-y-3.5">
+        <ul className="space-y-4 relative z-10">
           {safeOpportunities.map((op, index) => (
-            <li key={index} className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
-              <span className="flex items-center justify-center h-5 w-5 rounded-md bg-accent-emerald/10 text-accent-emerald text-[10px] font-bold shrink-0 mt-0.5">
-                {index + 1}
-              </span>
+            <li key={index} className="flex items-start gap-3.5 text-sm text-text-secondary leading-relaxed font-medium">
+              <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
               <span>{op}</span>
             </li>
           ))}
@@ -36,21 +35,20 @@ export default function RiskOpportunityList({ risks, opportunities }) {
       </div>
 
       {/* Risks (Bearish triggers) */}
-      <div className="glass-card gradient-border rounded-xl p-6 card-hover">
-        <div className="flex items-center gap-2.5 mb-4 border-b border-dark-border/60 pb-3">
-          <div className="p-1.5 bg-accent-rose/10 rounded-lg">
-            <AlertTriangle className="h-4 w-4 text-accent-rose" />
+      <div className="glass-card rounded-2xl p-6 card-hover shadow-lg shadow-indigo-100/10 border border-slate-200/50 relative overflow-hidden bg-rose-50/10">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-rose-500/5 to-transparent rounded-bl-full pointer-events-none" />
+        <div className="flex items-center gap-2.5 mb-5 border-b border-slate-100 pb-3 relative z-10">
+          <div className="p-2 bg-rose-50 rounded-xl text-rose-600 animate-pulse">
+            <AlertTriangle className="h-4.5 w-4.5" />
           </div>
           <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">
             Key Risks & Headwinds
           </h3>
         </div>
-        <ul className="space-y-3.5">
+        <ul className="space-y-4 relative z-10">
           {safeRisks.map((risk, index) => (
-            <li key={index} className="flex items-start gap-3 text-sm text-text-secondary leading-relaxed">
-              <span className="flex items-center justify-center h-5 w-5 rounded-md bg-accent-rose/10 text-accent-rose text-[10px] font-bold shrink-0 mt-0.5">
-                {index + 1}
-              </span>
+            <li key={index} className="flex items-start gap-3.5 text-sm text-text-secondary leading-relaxed font-medium">
+              <AlertTriangle className="h-4.5 w-4.5 text-rose-500 shrink-0 mt-0.5" />
               <span>{risk}</span>
             </li>
           ))}

@@ -33,23 +33,26 @@
 
 /* ── Glassmorphism Card (light theme) ──────────────────────────────── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 1px 3px rgba(15, 23, 42, 0.02), 
+    0 4px 16px rgba(15, 23, 42, 0.02),
+    0 16px 36px -4px rgba(99, 102, 241, 0.04);
 }
 
 /* ── Premium Card Hover Effect ──────────────────────────────────────── */
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card-hover:hover {
-  transform: translateY(-3px);
-  border-color: rgba(99, 102, 241, 0.25);
+  transform: translateY(-4px) scale(1.005);
+  border-color: rgba(99, 102, 241, 0.3);
   box-shadow:
-    0 8px 30px -10px rgba(99, 102, 241, 0.12),
-    0 4px 16px -4px rgba(15, 23, 42, 0.08),
+    0 20px 40px -15px rgba(99, 102, 241, 0.12),
+    0 8px 20px -6px rgba(15, 23, 42, 0.04),
     0 0 0 1px rgba(99, 102, 241, 0.06);
 }
 
@@ -64,13 +67,14 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.08));
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.05));
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+  z-index: 1;
 }
 
 /* ── Shimmer Loading Effect ─────────────────────────────────────────── */
@@ -86,14 +90,14 @@
 
 /* ── Gradient Text Utility ──────────────────────────────────────────── */
 .text-gradient {
-  background: linear-gradient(135deg, #6366F1 0%, #06B6D4 100%);
+  background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-warm {
-  background: linear-gradient(135deg, #F59E0B 0%, #F43F5E 100%);
+  background: linear-gradient(135deg, #F59E0B 0%, #E11D48 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -101,23 +105,51 @@
 
 /* ── Glow Effects (subtler for light theme) ────────────────────────── */
 .glow-brand {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 0 40px rgba(99, 102, 241, 0.06);
+  box-shadow: 0 0 25px rgba(99, 102, 241, 0.12), 0 0 50px rgba(99, 102, 241, 0.04);
 }
 
 .glow-emerald {
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15), 0 0 30px rgba(16, 185, 129, 0.06);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.12), 0 0 40px rgba(16, 185, 129, 0.04);
 }
 
 .glow-rose {
-  box-shadow: 0 0 15px rgba(244, 63, 94, 0.15), 0 0 30px rgba(244, 63, 94, 0.06);
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.12), 0 0 40px rgba(244, 63, 94, 0.04);
 }
 
 /* ── Background mesh gradient (for hero sections — light) ───────────── */
 .bg-mesh {
   background:
-    radial-gradient(at 20% 30%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
-    radial-gradient(at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
-    radial-gradient(at 50% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+    radial-gradient(at 85% 15%, rgba(6, 182, 212, 0.06) 0%, transparent 60%),
+    radial-gradient(at 50% 85%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+}
+
+/* ── Timeline connector for reasoning steps ─────────────────────────── */
+.timeline-item {
+  position: relative;
+}
+.timeline-item::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 26px;
+  bottom: -22px;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(99, 102, 241, 0.25) 0%, rgba(6, 182, 212, 0.08) 100%);
+}
+.timeline-item:last-child::after {
+  display: none;
+}
+
+/* ── Animated premium buttons ──────────────────────────────────────── */
+.btn-premium-gradient {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 50%, #06B6D4 100%);
+  background-size: 200% auto;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-premium-gradient:hover {
+  background-position: right center;
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.35);
 }
 
 /* ── Stagger animation delays ───────────────────────────────────────── */
@@ -130,7 +162,7 @@
 
 /* ── Smooth transitions for interactive elements ────────────────────── */
 .transition-smooth {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Pill badge utility ─────────────────────────────────────────────── */
