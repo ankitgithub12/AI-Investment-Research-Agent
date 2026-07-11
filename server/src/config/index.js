@@ -25,6 +25,10 @@ const config = {
     maxRetries: parseInt(process.env.MAX_RETRIES, 10) || 4,
     requestTimeout: parseInt(process.env.REQUEST_TIMEOUT, 10) || 10000,
   },
+  rateLimit: {
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000, // default 15 minutes
+    max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 50, // default 50 requests per windowMs
+  },
 };
 
 /**

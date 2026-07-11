@@ -4,11 +4,20 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import researchRoutes from './routes/researchRoutes.js';
 import logger from './utils/logger.js';
+import { apiLimiter } from './middlewares/rateLimiter.js';
 
 const app = express();
 
+// Enable trust proxy in production to get correct client IPs for rate limiting
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // ── Security Middleware ──────────────────────────────────────────────
 app.use(helmet());
+
+// ── Rate Limiting ────────────────────────────────────────────────────
+app.use('/api', apiLimiter);
 
 // ── CORS ─────────────────────────────────────────────────────────────
 app.use(
