@@ -20,13 +20,57 @@ app.use(helmet());
 app.use('/api', apiLimiter);
 
 // ── CORS ─────────────────────────────────────────────────────────────
+const getAllowedOrigins = () => {
+  const origins = [];
+  
+  if (process.env.CLIENT_URL) {
+    const envOrigins = process.env.CLIENT_URL.split(',')
+      .map(url => url.trim().replace(/\/$/, ''))
+      .filter(Boolean);
+    origins.push(...envOrigins);
+  }
+  
+  // Default permitted origins (local dev + deployed app)
+  origins.push(
+    'https://ai-investment-research-agent-topaz.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5000'
+  );
+  
+  return [...new Set(origins)];
+};
+
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'production'
-      ? process.env.CLIENT_URL
-      : ['http://localhost:5173', 'http://localhost:3000'],
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = getAllowedOrigins();
+      const originClean = origin.trim().replace(/\/$/, '');
+      
+      const isAllowed = allowedOrigins.includes(originClean) ||
+        originClean.endsWith('.vercel.app') ||
+        (process.env.NODE_ENV !== 'production' && (
+          originClean.startsWith('http://localhost:') ||
+          originClean.startsWith('http://127.0.0.1:') ||
+          originClean.startsWith('http://192.168.')
+        ));
+        
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        logger.warn(`CORS blocked request from origin: ${origin}`);
+        callback(null, false); // Omit Access-Control-Allow-Origin header to block the request
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
   })
 );
 
