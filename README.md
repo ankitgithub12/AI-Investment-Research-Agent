@@ -2,6 +2,8 @@
 
 An AI-powered investment research agent that analyzes public companies using LangChain.js, Google Gemini, and real-time financial data. Enter any company name and get a comprehensive investment recommendation with financial analysis, news sentiment, risk assessment, and detailed reasoning.
 
+**Live Demo:** [ai-investment-research-agent-topaz.vercel.app](https://ai-investment-research-agent-topaz.vercel.app/)
+
 ![Tech Stack](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=flat&logo=langchain&logoColor=white)
