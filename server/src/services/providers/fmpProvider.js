@@ -127,10 +127,40 @@ export class FmpProvider {
 
   /**
    * Search for stock tickers matching a query.
+   * Queries both symbol-based search and name-based search in parallel and merges results.
    * @param {string} query - Company name or keyword
    */
   async searchTicker(query) {
-    const url = `${this.baseUrl}/search-symbol?query=${encodeURIComponent(query)}&apikey=${this.apiKey}`;
-    return safeFetch(url);
+    const symbolUrl = `${this.baseUrl}/search-symbol?query=${encodeURIComponent(query)}&apikey=${this.apiKey}`;
+    const nameUrl = `${this.baseUrl}/search-name?query=${encodeURIComponent(query)}&apikey=${this.apiKey}`;
+
+    try {
+      const [symbolResults, nameResults] = await Promise.all([
+        safeFetch(symbolUrl).catch((err) => {
+          logger.warn(`FMP search-symbol failed: ${err.message}`);
+          return [];
+        }),
+        safeFetch(nameUrl).catch((err) => {
+          logger.warn(`FMP search-name failed: ${err.message}`);
+          return [];
+        }),
+      ]);
+
+      const combined = [...(symbolResults || []), ... (nameResults || [])];
+      const seen = new Set();
+      const unique = [];
+
+      for (const item of combined) {
+        if (item && item.symbol && !seen.has(item.symbol)) {
+          seen.add(item.symbol);
+          unique.push(item);
+        }
+      }
+
+      return unique;
+    } catch (error) {
+      logger.error(`FMP ticker search failed: ${error.message}`);
+      return [];
+    }
   }
 }

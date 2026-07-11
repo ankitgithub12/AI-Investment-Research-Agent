@@ -76,6 +76,10 @@ const COMMON_TICKERS = {
   wipro: 'WIPRO.NS',
   hdfc: 'HDFCBANK.NS',
   tata: 'TATAMOTORS.NS',
+  ge: 'GE',
+  'general electric': 'GE',
+  'eli lilly': 'LLY',
+  lilly: 'LLY',
 };
 
 // Instantiate the configured provider
@@ -162,6 +166,48 @@ export async function getAggregatedFinancialData(symbol) {
 }
 
 /**
+ * Selects the best ticker symbol from FMP search results.
+ * Prioritizes:
+ * 1. Exact ticker match (case-insensitive)
+ * 2. Tickers listed on US exchanges (no dot in symbol, NYSE/NASDAQ/AMEX, USD currency)
+ */
+function selectBestTicker(results, query) {
+  if (!results || results.length === 0) return null;
+
+  const queryUpper = query.trim().toUpperCase();
+  
+  // 1. Check if any results match the symbol exactly
+  const exactMatch = results.find(r => r.symbol?.toUpperCase() === queryUpper);
+  if (exactMatch) return exactMatch.symbol;
+
+  // 2. Sort to prioritize US listings
+  const sorted = [...results].sort((a, b) => {
+    // Tickers without dots are usually primary US listings (e.g. LLY vs LLY.DE)
+    const aHasDot = a.symbol?.includes('.') || false;
+    const bHasDot = b.symbol?.includes('.') || false;
+    if (aHasDot && !bHasDot) return 1;
+    if (!aHasDot && bHasDot) return -1;
+
+    // Prioritize standard US exchanges
+    const uExchanges = ['NYSE', 'NASDAQ', 'AMEX'];
+    const aIsUS = uExchanges.includes(a.exchange?.toUpperCase());
+    const bIsUS = uExchanges.includes(b.exchange?.toUpperCase());
+    if (aIsUS && !bIsUS) return -1;
+    if (!aIsUS && bIsUS) return 1;
+
+    // Prioritize USD currency
+    const aIsUSD = a.currency?.toUpperCase() === 'USD';
+    const bIsUSD = b.currency?.toUpperCase() === 'USD';
+    if (aIsUSD && !bIsUSD) return -1;
+    if (!aIsUSD && bIsUSD) return 1;
+
+    return 0;
+  });
+
+  return sorted[0]?.symbol || null;
+}
+
+/**
  * Resolves a company name to its stock ticker symbol.
  * Throws ValidationError if not resolved.
  * @param {string} companyName - Name of the company
@@ -199,10 +245,10 @@ export async function resolveTicker(companyName) {
       }
     }
 
-    if (results && results.length > 0) {
-      const match = results[0];
-      logger.info(`Resolved "${companyName}" to ticker: ${match.symbol}`);
-      return match.symbol;
+    const bestTicker = selectBestTicker(results, companyName);
+    if (bestTicker) {
+      logger.info(`Resolved "${companyName}" to ticker: ${bestTicker}`);
+      return bestTicker;
     }
   } catch (error) {
     logger.error(`Ticker resolution failed for "${companyName}": ${error.message}`);
